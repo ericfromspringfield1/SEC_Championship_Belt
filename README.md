@@ -68,3 +68,24 @@ Where `bothSEC(game)` uses realignment-aware SEC membership intervals from `data
 - `/teams/[team]`
 - `/games`
 - `/games/[id]`
+
+## Troubleshooting `npm ERR! Missing script: "dev"`
+If you see this error, the most common cause is running npm from the wrong folder.
+
+Use:
+```bash
+pwd
+cat package.json
+npm run
+```
+
+You should be in the repository root (the same folder that contains this project's `package.json` with `"dev": "next dev"`).
+
+Then run:
+```bash
+npm install
+npm run dev
+```
+
+If `npm run` still does not show `dev`, pull the latest branch state and retry.
+
