@@ -1,0 +1,21 @@
+[
+  {"team":"Alabama","start_season":1933,"end_season":null},
+  {"team":"Auburn","start_season":1933,"end_season":null},
+  {"team":"Florida","start_season":1933,"end_season":null},
+  {"team":"Georgia","start_season":1933,"end_season":null},
+  {"team":"Kentucky","start_season":1933,"end_season":null},
+  {"team":"LSU","start_season":1933,"end_season":null},
+  {"team":"Mississippi","start_season":1933,"end_season":null},
+  {"team":"Mississippi State","start_season":1933,"end_season":null},
+  {"team":"Tennessee","start_season":1933,"end_season":null},
+  {"team":"Vanderbilt","start_season":1933,"end_season":null},
+  {"team":"Sewanee","start_season":1933,"end_season":1940},
+  {"team":"Georgia Tech","start_season":1933,"end_season":1963},
+  {"team":"Tulane","start_season":1933,"end_season":1965},
+  {"team":"Arkansas","start_season":1992,"end_season":null},
+  {"team":"South Carolina","start_season":1992,"end_season":null},
+  {"team":"Missouri","start_season":2012,"end_season":null},
+  {"team":"Texas A&M","start_season":2012,"end_season":null},
+  {"team":"Texas","start_season":2024,"end_season":null},
+  {"team":"Oklahoma","start_season":2024,"end_season":null}
+]
