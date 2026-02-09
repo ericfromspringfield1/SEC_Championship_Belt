@@ -10,11 +10,17 @@ Production-ready Next.js app + SQLite ingestion pipeline for tracking the SEC fo
 ## Setup
 ```bash
 npm install
-npm run ingest
 npm run dev
 ```
 
-The ingest command rebuilds `data/sec-belt.sqlite` from all configured source files.
+`npm run dev` now auto-bootstraps `data/sec-belt.sqlite` on first run if the DB is missing or incomplete (`games`, `title_changes`, `reigns`).
+
+## Rebuild / Refresh Data
+```bash
+npm run ingest
+```
+
+`npm run ingest` remains the explicit full rebuild command and always recreates `data/sec-belt.sqlite` from configured source files.
 
 ## Ingestion
 `npm run ingest` will:
