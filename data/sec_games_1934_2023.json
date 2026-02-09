@@ -1,0 +1,28 @@
+{
+  "source": "repository-bundled",
+  "description": "SEC game results input for 1934-2023 used by bootstrap ingestion",
+  "games": [
+    {
+      "id": "historical-1934-opener",
+      "date": "1934-09-29",
+      "season": 1934,
+      "seasonType": "regular",
+      "conferenceGame": true,
+      "homeTeam": "Alabama",
+      "awayTeam": "Ole Miss",
+      "homeScore": 20,
+      "awayScore": 7
+    },
+    {
+      "id": "historical-2023-sec-championship",
+      "date": "2023-12-02",
+      "season": 2023,
+      "seasonType": "not-regular",
+      "conferenceGame": true,
+      "homeTeam": "Georgia",
+      "awayTeam": "Alabama",
+      "homeScore": 24,
+      "awayScore": 27
+    }
+  ]
+}

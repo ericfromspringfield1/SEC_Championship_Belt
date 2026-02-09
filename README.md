@@ -10,25 +10,31 @@ Production-ready Next.js app + SQLite ingestion pipeline for tracking the SEC fo
 ## Setup
 ```bash
 npm install
-npm run ingest
 npm run dev
 ```
 
-The ingest command rebuilds `data/sec-belt.sqlite` from all configured source files.
+`npm run dev` now auto-bootstraps `data/sec-belt.sqlite` on first run if the DB is missing or incomplete (`games`, `title_changes`, `reigns`).
+
+Bundled historical input is read from `data/sec_games_1934_2023.json` (1934–2023). Optional season extensions can be added at `data/sec_games_2024.json` and `data/sec_games_2025.json`.
+
+## Rebuild / Refresh Data
+```bash
+npm run ingest
+```
+
+`npm run ingest` remains the explicit full rebuild command and always recreates `data/sec-belt.sqlite` from configured source files.
 
 ## Ingestion
 `npm run ingest` will:
-1. Read historical CSVs:
-   - `/mnt/data/SECFootball1934-1960.csv`
-   - `/mnt/data/SECFootball1961-1981.csv`
-   - `/mnt/data/SECFootball1982-2023.csv`
-2. Validate simulated title changes vs:
-   - `/mnt/data/EveryTitleChange1934-2023.xlsx`
-3. Read JSON data:
-   - `/mnt/data/response_1770516432120.json`
-   - `/mnt/data/response_1770516699071.json`
-   - `/mnt/data/response_1770516804124.json`
-4. Compute title changes + reigns through 2025.
+1. Read bundled historical JSON:
+   - `data/sec_games_1934_2023.json`
+2. Optionally read additional JSON seasons when present:
+   - `data/sec_games_2024.json`
+   - `data/sec_games_2025.json`
+3. Validate simulated title changes through 2023 when ledger is available:
+   - `data/EveryTitleChange1934-2023.xlsx` (preferred)
+   - `/mnt/data/EveryTitleChange1934-2023.xlsx` (legacy fallback)
+4. Rebuild SQLite tables and compute title changes + reigns through 2025.
 
 If validation mismatches are found, a diff report (first 50 mismatches) is printed and ingest exits non-zero.
 
