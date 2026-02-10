@@ -40,11 +40,9 @@ If validation mismatches are found, a diff report (first 50 mismatches) is print
 
 
 Preferred in-repo inputs (when present):
-- `data/sec_games_1934_2023.json`
-- `data/sec_games_2024.json`
-- `data/sec_games_2025.json`
+- `data/sec_games_1934_2025.json`
 
-If these files are present (any subset), ingest uses them directly and computes belt flags per game (`titleGame`, `homeTeamIsChampion`, `awayTeamIsChampion`).
+If this file is present, ingest uses it directly (with filename-pattern fallback for `sec_games_*.json`) and computes belt flags per game (`titleGame`, `homeTeamIsChampion`, `awayTeamIsChampion`) even when those fields are missing from the source JSON.
 
 ## Authoritative Eligibility Rules
 `eligible(game) =

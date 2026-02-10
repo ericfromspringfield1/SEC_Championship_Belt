@@ -18,7 +18,7 @@ const json2024Path = '/mnt/data/response_1770516699071.json';
 const json2025Path = '/mnt/data/response_1770516804124.json';
 const ledgerPath = '/mnt/data/EveryTitleChange1934-2023.xlsx';
 
-const preferredRepoDataGameFiles = ['sec_games_1934_2023.json', 'sec_games_2024.json', 'sec_games_2025.json'];
+const preferredRepoDataGameFiles = ['sec_games_1934_2025.json'];
 
 export const REQUIRED_TABLES = ['games', 'title_changes', 'reigns'] as const;
 
