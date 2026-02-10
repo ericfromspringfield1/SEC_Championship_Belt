@@ -38,6 +38,14 @@ npm run ingest
 
 If validation mismatches are found, a diff report (first 50 mismatches) is printed and ingest exits non-zero.
 
+
+Preferred in-repo inputs (when present):
+- `data/sec_games_1934_2023.json`
+- `data/sec_games_2024.json`
+- `data/sec_games_2025.json`
+
+If these files are present (any subset), ingest uses them directly and computes belt flags per game (`titleGame`, `homeTeamIsChampion`, `awayTeamIsChampion`).
+
 ## Authoritative Eligibility Rules
 `eligible(game) =
 (seasonType === "regular" && conferenceGame === true)
