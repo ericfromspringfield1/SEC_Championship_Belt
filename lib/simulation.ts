@@ -45,10 +45,15 @@ export function simulateBelt(games: Game[]): { titleChanges: TitleChange[]; reig
 
   for (const game of ordered) {
     if (game.noWinnerOrLoser) continue;
+
+    const homeTeamIsChampion = game.homeTeam === champion;
+    const awayTeamIsChampion = game.awayTeam === champion;
+    game.homeTeamIsChampion = homeTeamIsChampion;
+    game.awayTeamIsChampion = awayTeamIsChampion;
+    game.titleGame = homeTeamIsChampion || awayTeamIsChampion;
+
     const reason = getEligibilityReason(game);
-    if (!reason) continue;
-    const championInGame = game.homeTeam === champion || game.awayTeam === champion;
-    if (!championInGame) continue;
+    if (!reason || !game.titleGame) continue;
 
     if (game.winnerTeam === champion) {
       defenses += 1;

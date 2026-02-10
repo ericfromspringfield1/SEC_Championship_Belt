@@ -18,6 +18,8 @@ const json2024Path = '/mnt/data/response_1770516699071.json';
 const json2025Path = '/mnt/data/response_1770516804124.json';
 const ledgerPath = '/mnt/data/EveryTitleChange1934-2023.xlsx';
 
+const preferredRepoDataGameFiles = ['sec_games_1934_2025.json'];
+
 export const REQUIRED_TABLES = ['games', 'title_changes', 'reigns'] as const;
 
 export function hasRequiredTables(dbPath: string) {
@@ -112,6 +114,9 @@ function gameFromCsvRow(row: Record<string, string>, source: string, idx: number
       sourceIndex: idx,
       notes: row.Notes,
       noWinnerOrLoser: true,
+      titleGame: false,
+      homeTeamIsChampion: false,
+      awayTeamIsChampion: false,
     };
   }
   const date = normalizeDate(row.Date);
@@ -143,6 +148,9 @@ function gameFromCsvRow(row: Record<string, string>, source: string, idx: number
     sourceIndex: idx,
     notes: row.Notes,
     noWinnerOrLoser: false,
+    titleGame: false,
+    homeTeamIsChampion: false,
+    awayTeamIsChampion: false,
   };
 }
 
@@ -183,8 +191,11 @@ function gameFromJson(item: any, source: string, idx: number): Game | null {
     loserScore: Math.min(homeScore, awayScore),
     source,
     sourceIndex: idx,
-    notes: null,
-    noWinnerOrLoser: false,
+    notes: item.notes ?? null,
+    noWinnerOrLoser: Boolean(item.noWinnerOrLoser),
+    titleGame: Boolean(item.titleGame),
+    homeTeamIsChampion: Boolean(item.homeTeamIsChampion),
+    awayTeamIsChampion: Boolean(item.awayTeamIsChampion),
   };
 }
 
@@ -210,7 +221,10 @@ function setupSchema(db: Database.Database) {
       source TEXT NOT NULL,
       sourceIndex INTEGER NOT NULL,
       notes TEXT,
-      noWinnerOrLoser INTEGER NOT NULL DEFAULT 0
+      noWinnerOrLoser INTEGER NOT NULL DEFAULT 0,
+      titleGame INTEGER NOT NULL DEFAULT 0,
+      homeTeamIsChampion INTEGER NOT NULL DEFAULT 0,
+      awayTeamIsChampion INTEGER NOT NULL DEFAULT 0
     );
     CREATE TABLE title_changes (
       id TEXT PRIMARY KEY,
@@ -239,6 +253,7 @@ function setupSchema(db: Database.Database) {
     CREATE INDEX idx_games_home ON games(homeTeam);
     CREATE INDEX idx_games_away ON games(awayTeam);
     CREATE INDEX idx_games_season ON games(season);
+    CREATE INDEX idx_games_title_game ON games(titleGame);
     CREATE INDEX idx_tc_date ON title_changes(date);
     CREATE INDEX idx_tc_new ON title_changes(new_champ);
     CREATE INDEX idx_tc_old ON title_changes(old_champ);
@@ -250,26 +265,21 @@ function setupSchema(db: Database.Database) {
 
 function insertData(db: Database.Database, games: Game[]) {
   const insertGame = db.prepare(`
-    INSERT INTO games VALUES (@id,@date,@season,@seasonType,@conferenceGame,@homeTeam,@awayTeam,@homeScore,@awayScore,@winnerTeam,@loserTeam,@winnerScore,@loserScore,@source,@sourceIndex,@notes,@noWinnerOrLoser)
+    INSERT INTO games VALUES (@id,@date,@season,@seasonType,@conferenceGame,@homeTeam,@awayTeam,@homeScore,@awayScore,@winnerTeam,@loserTeam,@winnerScore,@loserScore,@source,@sourceIndex,@notes,@noWinnerOrLoser,@titleGame,@homeTeamIsChampion,@awayTeamIsChampion)
   `);
   const tx = db.transaction((rows: Game[]) => {
     for (const row of rows) {
-      insertGame.run({ ...row, conferenceGame: row.conferenceGame === null ? null : row.conferenceGame ? 1 : 0, noWinnerOrLoser: row.noWinnerOrLoser ? 1 : 0 });
+      insertGame.run({
+        ...row,
+        conferenceGame: row.conferenceGame === null ? null : row.conferenceGame ? 1 : 0,
+        noWinnerOrLoser: row.noWinnerOrLoser ? 1 : 0,
+        titleGame: row.titleGame ? 1 : 0,
+        homeTeamIsChampion: row.homeTeamIsChampion ? 1 : 0,
+        awayTeamIsChampion: row.awayTeamIsChampion ? 1 : 0,
+      });
     }
   });
   tx(games);
-}
-
-function insertSimulation(db: Database.Database, games: Game[]) {
-  const { titleChanges, reigns } = simulateBelt(games);
-  const insertTC = db.prepare('INSERT INTO title_changes VALUES (@id,@date,@season,@new_champ,@old_champ,@score,@game_id,@eligible_reason)');
-  const insertReign = db.prepare('INSERT INTO reigns VALUES (@id,@champ,@start_date,@end_date,@length_days,@defenses,@ended_by_team,@end_game_id,@reign_index_for_team)');
-  const tx = db.transaction(() => {
-    for (const tc of titleChanges) insertTC.run(tc);
-    for (const reign of reigns) insertReign.run(reign);
-  });
-  tx();
-  return titleChanges;
 }
 
 function validateAgainstLedger(titleChanges: any[], limitThroughSeason: number) {
@@ -295,6 +305,31 @@ function validateAgainstLedger(titleChanges: any[], limitThroughSeason: number) 
   console.log(`Validation passed against ledger with ${actual.length} title changes.`);
 }
 
+function resolveRepoDataGamePaths(): string[] {
+  const dataDir = path.join(process.cwd(), 'data');
+  if (!fs.existsSync(dataDir)) return [];
+
+  const preferredPaths = preferredRepoDataGameFiles.map((filename) => path.join(dataDir, filename));
+  if (preferredPaths.every((p) => fs.existsSync(p))) return preferredPaths;
+
+  const fallbackPaths = fs
+    .readdirSync(dataDir, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && /^sec_games_\d{4}(?:_\d{4})?\.json$/i.test(entry.name))
+    .map((entry) => path.join(dataDir, entry.name))
+    .sort((a, b) => a.localeCompare(b));
+
+  return fallbackPaths;
+}
+
+function loadGamesFromRepoDataFiles(jsonPaths: string[]): Game[] {
+  return jsonPaths.flatMap((jsonPath, fileIndex) => {
+    const sourceName = path.basename(jsonPath);
+    return getArrayPayload(JSON.parse(fs.readFileSync(jsonPath, 'utf8')))
+      .map((it, idx) => gameFromJson(it, sourceName || `repo-json-${fileIndex}`, idx))
+      .filter(Boolean) as Game[];
+  });
+}
+
 export function ingestAll(dbPath: string, options?: { forceRebuild?: boolean }) {
   fs.mkdirSync(path.dirname(dbPath), { recursive: true });
   if (options?.forceRebuild && fs.existsSync(dbPath)) {
@@ -305,25 +340,40 @@ export function ingestAll(dbPath: string, options?: { forceRebuild?: boolean }) 
   try {
     setupSchema(db);
 
-    const csvGames = csvPaths.flatMap((p) => parseCsv(p).map((row, idx) => gameFromCsvRow(row, path.basename(p), idx)).filter(Boolean) as Game[]);
-    const jsonTeams = JSON.parse(fs.readFileSync(jsonTeamsPath, 'utf8'));
-    if (jsonTeams) {
-      // loaded for optional cross-check availability
-    }
-    const games2024 = getArrayPayload(JSON.parse(fs.readFileSync(json2024Path, 'utf8')))
-      .map((it, idx) => gameFromJson(it, 'json2024', idx))
-      .filter(Boolean) as Game[];
-    const games2025 = getArrayPayload(JSON.parse(fs.readFileSync(json2025Path, 'utf8')))
-      .map((it, idx) => gameFromJson(it, 'json2025', idx))
-      .filter(Boolean) as Game[];
+    const repoJsonPaths = resolveRepoDataGamePaths();
+    const allGames = repoJsonPaths.length
+      ? sortGamesDeterministically(loadGamesFromRepoDataFiles(repoJsonPaths))
+      : (() => {
+          const csvGames = csvPaths.flatMap((p) => parseCsv(p).map((row, idx) => gameFromCsvRow(row, path.basename(p), idx)).filter(Boolean) as Game[]);
+          const jsonTeams = JSON.parse(fs.readFileSync(jsonTeamsPath, 'utf8'));
+          if (jsonTeams) {
+            // loaded for optional cross-check availability
+          }
+          const games2024 = getArrayPayload(JSON.parse(fs.readFileSync(json2024Path, 'utf8')))
+            .map((it, idx) => gameFromJson(it, 'json2024', idx))
+            .filter(Boolean) as Game[];
+          const games2025 = getArrayPayload(JSON.parse(fs.readFileSync(json2025Path, 'utf8')))
+            .map((it, idx) => gameFromJson(it, 'json2025', idx))
+            .filter(Boolean) as Game[];
 
-    const allGames = sortGamesDeterministically([...csvGames, ...games2024, ...games2025]);
+          const historical = sortGamesDeterministically(csvGames);
+          const firstPassChanges = simulateBelt(historical).titleChanges;
+          validateAgainstLedger(firstPassChanges, 2023);
+
+          return sortGamesDeterministically([...csvGames, ...games2024, ...games2025]);
+        })();
+
+    const simulated = simulateBelt(allGames);
     insertData(db, allGames);
 
-    const firstPassChanges = simulateBelt(sortGamesDeterministically(csvGames)).titleChanges;
-    validateAgainstLedger(firstPassChanges, 2023);
+    const insertTC = db.prepare('INSERT INTO title_changes VALUES (@id,@date,@season,@new_champ,@old_champ,@score,@game_id,@eligible_reason)');
+    const insertReign = db.prepare('INSERT INTO reigns VALUES (@id,@champ,@start_date,@end_date,@length_days,@defenses,@ended_by_team,@end_game_id,@reign_index_for_team)');
+    const txSimulation = db.transaction(() => {
+      for (const tc of simulated.titleChanges) insertTC.run(tc);
+      for (const reign of simulated.reigns) insertReign.run(reign);
+    });
+    txSimulation();
 
-    insertSimulation(db, allGames);
     console.log(`Ingest complete. Games=${allGames.length}`);
   } finally {
     db.close();
