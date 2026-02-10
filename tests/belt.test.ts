@@ -52,6 +52,14 @@ describe('deterministic ordering and nth win', () => {
     expect(out.titleChanges).toHaveLength(2);
     expect(out.titleChanges[0].new_champ).toBe('Georgia');
     expect(out.titleChanges[1].new_champ).toBe('Alabama');
+
+    expect(games[0].titleGame).toBe(true);
+    expect(games[0].awayTeamIsChampion).toBe(true);
+    expect(games[0].homeTeamIsChampion).toBe(false);
+
+    expect(games[1].titleGame).toBe(true);
+    expect(games[1].homeTeamIsChampion).toBe(false);
+    expect(games[1].awayTeamIsChampion).toBe(true);
   });
 });
 

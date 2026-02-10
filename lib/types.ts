@@ -18,6 +18,9 @@ export type Game = {
   sourceIndex: number;
   notes?: string | null;
   noWinnerOrLoser?: boolean;
+  titleGame?: boolean;
+  homeTeamIsChampion?: boolean;
+  awayTeamIsChampion?: boolean;
 };
 
 export type MembershipInterval = {
