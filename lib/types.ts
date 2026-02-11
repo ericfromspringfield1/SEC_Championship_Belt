@@ -27,6 +27,8 @@ export type MembershipInterval = {
   team: string;
   start_season: number;
   end_season: number | null;
+  primaryColor: string;
+  secondaryColor: string;
 };
 
 export type TitleChange = {
