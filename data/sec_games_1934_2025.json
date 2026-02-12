@@ -79483,5 +79483,26 @@
     "noWinnerOrLoser": false,
     "sourceFile": "sec_schedule_2025.html",
     "sourceRowId": "65"
+  },
+  {
+    "id": "SECFootball1982-2025:3786",
+    "date": "2025-12-19",
+    "season": 2025,
+    "day": "Fri",
+    "seasonType": "postseason",
+    "conferenceGame": null,
+    "homeTeam": "Oklahoma",
+    "awayTeam": "Alabama",
+    "homeScore": 0,
+    "awayScore": 1,
+    "winnerTeam": "Alabama",
+    "loserTeam": "Oklahoma",
+    "winnerScore": 1,
+    "loserScore": 0,
+    "locationType": "away_win_at_opponent",
+    "notes": "Added manually: CFP first round in Norman; winner confirmed, score not provided.",
+    "noWinnerOrLoser": false,
+    "sourceFile": "manual_update_2026-02-12",
+    "sourceRowId": "manual-1"
   }
 ]
