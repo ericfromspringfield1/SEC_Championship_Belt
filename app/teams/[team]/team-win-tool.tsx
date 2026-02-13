@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { getTeamCardStyle } from '@/lib/teamColors';
 
 export default function TeamWinTool({ team }: { team: string }) {
   const [n, setN] = useState(1);
@@ -17,7 +18,14 @@ export default function TeamWinTool({ team }: { team: string }) {
         <input type="number" min={1} value={n} onChange={(e) => setN(Number(e.target.value))} className="rounded border p-2" />
         <button onClick={lookup} className="rounded bg-blue-600 px-3 py-2 text-white">Lookup</button>
       </div>
-      {result ? <pre>{JSON.stringify(result, null, 2)}</pre> : 'Choose win number.'}
+      {result ? (
+        <div className="rounded-lg border-l-8 p-3" style={getTeamCardStyle(team)}>
+          <p className="font-semibold">{team} belt win #{n}</p>
+          <p className="text-sm">Date: {result.date}</p>
+          <p className="text-sm">Opponent: {result.loserTeam}</p>
+          <p className="text-sm">Game ID: {result.id}</p>
+        </div>
+      ) : 'Choose win number.'}
     </div>
   );
 }
