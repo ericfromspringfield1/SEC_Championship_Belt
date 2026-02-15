@@ -79490,19 +79490,19 @@
     "season": 2025,
     "day": "Fri",
     "seasonType": "postseason",
-    "conferenceGame": null,
+    "conferenceGame": true,
     "homeTeam": "Oklahoma",
     "awayTeam": "Alabama",
-    "homeScore": 0,
-    "awayScore": 1,
+    "homeScore": 24,
+    "awayScore": 34,
     "winnerTeam": "Alabama",
     "loserTeam": "Oklahoma",
-    "winnerScore": 1,
-    "loserScore": 0,
+    "winnerScore": 34,
+    "loserScore": 24,
     "locationType": "away_win_at_opponent",
-    "notes": "Added manually: CFP first round in Norman; winner confirmed, score not provided.",
+    "notes": "College Football Playoff First Round Game",
     "noWinnerOrLoser": false,
-    "sourceFile": "manual_update_2026-02-12",
-    "sourceRowId": "manual-1"
+    "sourceFile": "manual_update_2026-02-15",
+    "sourceRowId": "401779840"
   }
 ]
