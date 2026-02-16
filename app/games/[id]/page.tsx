@@ -1,6 +1,7 @@
 import { getDb } from '@/lib/db';
 import { getEligibilityReason } from '@/lib/eligibility';
 import { getTeamCardStyle } from '@/lib/teamColors';
+import { TeamLabel } from '@/components/TeamLabel';
 
 export default function GameDetail({ params }: { params: { id: string } }) {
   const game = getDb().prepare('SELECT * FROM games WHERE id = ?').get(decodeURIComponent(params.id)) as any;
@@ -13,12 +14,12 @@ export default function GameDetail({ params }: { params: { id: string } }) {
       <div className="grid gap-4 md:grid-cols-2">
         <div className="card border-l-8" style={getTeamCardStyle(game.winnerTeam)}>
           <p className="text-sm opacity-90">Winner</p>
-          <p className="text-xl font-semibold">{game.winnerTeam}</p>
+          <p className="text-xl font-semibold"><TeamLabel team={game.winnerTeam} className="text-xl font-semibold" /></p>
           <p>Score: {game.winnerScore}</p>
         </div>
         <div className="card border-l-8" style={getTeamCardStyle(game.loserTeam)}>
           <p className="text-sm opacity-90">Loser</p>
-          <p className="text-xl font-semibold">{game.loserTeam}</p>
+          <p className="text-xl font-semibold"><TeamLabel team={game.loserTeam} className="text-xl font-semibold" /></p>
           <p>Score: {game.loserScore}</p>
         </div>
       </div>
