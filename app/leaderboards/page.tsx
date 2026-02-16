@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { getTeamCardStyle } from '@/lib/teamColors';
+import { TeamLabel } from '@/components/TeamLabel';
 
 type Row = Record<string, string | number | null>;
 
@@ -65,7 +66,7 @@ export default function LeaderboardsPage() {
           return (
             <div key={`${team ?? 'row'}-${index}`} className="card border-l-8" style={getTeamCardStyle(team)}>
               <p className="text-sm opacity-90">#{index + 1}</p>
-              <p className="text-lg font-semibold">{team ?? 'Unknown team'}</p>
+              <p className="text-lg font-semibold"><TeamLabel team={team} className="text-lg font-semibold" logoClassName="h-6 w-6" /></p>
               <div className="mt-2 space-y-1 text-sm">
                 {Object.entries(row).filter(([key]) => key !== 'team' && key !== 'champ').map(([key, value]) => (
                   <p key={key}><span className="font-semibold">{key.replaceAll('_', ' ')}:</span> {String(value)}</p>

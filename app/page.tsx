@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getChampionOnDate, getLongestReigns, getMostReignsLeaderboard } from '@/lib/beltQueries';
 import { LeaderboardChart } from '@/components/LeaderboardChart';
+import { TeamLabel } from '@/components/TeamLabel';
 
 export default function Dashboard() {
   const today = new Date().toISOString().slice(0, 10);
@@ -13,7 +14,7 @@ export default function Dashboard() {
       <h1 className="text-2xl font-bold">SEC Football Championship Belt</h1>
       <div className="card">
         <h2 className="font-semibold">Current Champion</h2>
-        {champion ? <p>{champion.team} (since {champion.reignStartDate})</p> : <p>No data.</p>}
+        {champion ? <p><TeamLabel team={champion.team} /> <span>(since {champion.reignStartDate})</span></p> : <p>No data.</p>}
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         <div className="card">
@@ -23,7 +24,7 @@ export default function Dashboard() {
         <div className="card">
           <h3 className="font-semibold">Longest Reigns Preview</h3>
           <ul className="list-disc pl-5">
-            {longest.map((item, i) => <li key={i}>{item.champ}: {item.length_days} days</li>)}
+            {longest.map((item, i) => <li key={i}><TeamLabel team={item.champ} className="text-sm" logoClassName="h-5 w-5" />: {item.length_days} days</li>)}
           </ul>
         </div>
       </div>
