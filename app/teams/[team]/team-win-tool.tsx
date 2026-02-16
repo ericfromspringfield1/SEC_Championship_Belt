@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { getTeamCardStyle } from '@/lib/teamColors';
+import { TeamLabel } from '@/components/TeamLabel';
 
 export default function TeamWinTool({ team }: { team: string }) {
   const [n, setN] = useState(1);
@@ -20,9 +21,9 @@ export default function TeamWinTool({ team }: { team: string }) {
       </div>
       {result ? (
         <div className="rounded-lg border-l-8 p-3" style={getTeamCardStyle(team)}>
-          <p className="font-semibold">{team} belt win #{n}</p>
+          <p className="font-semibold"><TeamLabel team={team} className="font-semibold" logoClassName="h-5 w-5" /> belt win #{n}</p>
           <p className="text-sm">Date: {result.date}</p>
-          <p className="text-sm">Opponent: {result.loserTeam}</p>
+          <p className="text-sm">Opponent: <TeamLabel team={result.loserTeam} className="text-sm" logoClassName="h-4 w-4" /></p>
           <p className="text-sm">Game ID: {result.id}</p>
         </div>
       ) : 'Choose win number.'}

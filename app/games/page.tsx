@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { TeamLabel } from '@/components/TeamLabel';
 
 export default function GamesPage() {
   const [rows, setRows] = useState<any[]>([]);
@@ -21,7 +22,7 @@ export default function GamesPage() {
         ))}
       </div>
       <div className="card">
-        {rows.length ? rows.map((g) => <div key={g.id}><Link className="underline" href={`/games/${encodeURIComponent(g.id)}`}>{g.date} {g.winnerTeam} def. {g.loserTeam}</Link></div>) : 'No games found.'}
+        {rows.length ? rows.map((g) => <div key={g.id}><Link className="underline" href={`/games/${encodeURIComponent(g.id)}`}>{g.date} <TeamLabel team={g.winnerTeam} className="text-sm" logoClassName="h-4 w-4" /> def. <TeamLabel team={g.loserTeam} className="text-sm" logoClassName="h-4 w-4" /></Link></div>) : 'No games found.'}
       </div>
     </div>
   );

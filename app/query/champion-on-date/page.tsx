@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { getTeamCardStyle } from '@/lib/teamColors';
+import { TeamLabel } from '@/components/TeamLabel';
 
 export default function ChampionOnDatePage() {
   const [date, setDate] = useState('2024-10-01');
@@ -23,7 +24,7 @@ export default function ChampionOnDatePage() {
         {result ? (
           <div className="rounded-lg border-l-8 p-4" style={getTeamCardStyle(result.team)}>
             <p className="text-sm opacity-90">Champion on {date}</p>
-            <p className="text-2xl font-bold">{result.team}</p>
+            <p className="text-2xl font-bold"><TeamLabel team={result.team} className="text-2xl font-bold" logoClassName="h-8 w-8" /></p>
             <p className="mt-1 text-sm">Started reign: {result.reignStartDate}</p>
             {result.gameId ? <p className="text-sm">Won in game: {result.gameId}</p> : null}
           </div>
